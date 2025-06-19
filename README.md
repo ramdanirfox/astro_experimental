@@ -1,5 +1,34 @@
 # Astro Starter Kit: Basics
 
+```
+This project demostrate AstroJS capabilities for mixing different frameworks
+- Angular (AnalogJS)
+- React
+- SolidJS
+- Svelte
+- Vue
+
+Running in development mode is okay, but
+
+Currently build is broken for :
+- AnalogJS
+- React
+```
+
+```
+VSCode preparation
+install extension
+
+https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode
+
+https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode
+```
+
+References :
+```
+https://github.com/kathirr007/astro-multi-framework/blob/main/astro.config.mjs
+```
+
 ```sh
 pnpm create astro@latest -- --template basics
 ```
