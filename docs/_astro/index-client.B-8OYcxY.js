@@ -3156,5 +3156,5 @@ if (DEV) {
 	throw_rune_error('$bindable');
 }
 
-export { first_child as a, sibling as b, snippet as c, delegate as d, append as e, from_html as f, set as g, get as h, child as i, set_text as j, createRawSnippet as k, hydrate as l, mount as m, noop as n, proxy as p, reset as r, state as s, template_effect as t, unmount as u };
-//# sourceMappingURL=index-client.DE2bsSxJ.js.map
+export { first_child as a, sibling as b, createRawSnippet as c, delegate as d, snippet as e, from_html as f, append as g, hydrate as h, set as i, get as j, child as k, set_text as l, mount as m, noop as n, proxy as p, reset as r, state as s, template_effect as t, unmount as u };
+//# sourceMappingURL=index-client.B-8OYcxY.js.map

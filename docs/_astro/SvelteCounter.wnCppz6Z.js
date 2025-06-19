@@ -1,4 +1,4 @@
-import { d as delegate, f as from_html, a as first_child, s as state, b as sibling, c as snippet, t as template_effect, e as append, g as set, h as get, i as child, r as reset, n as noop, j as set_text } from './index-client.DE2bsSxJ.js';
+import { d as delegate, f as from_html, a as first_child, s as state, b as sibling, e as snippet, t as template_effect, g as append, i as set, j as get, k as child, r as reset, n as noop, l as set_text } from './index-client.B-8OYcxY.js';
 
 // generated during release, do not modify
 
@@ -49,4 +49,4 @@ function SvelteCounter($$anchor, $$props) {
 delegate(['click']);
 
 export { SvelteCounter as default };
-//# sourceMappingURL=SvelteCounter.DUkqc2i-.js.map
+//# sourceMappingURL=SvelteCounter.wnCppz6Z.js.map

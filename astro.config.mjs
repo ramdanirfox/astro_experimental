@@ -13,6 +13,7 @@ import angular from '@analogjs/astro-angular';
 
 // https://astro.build/config
 export default defineConfig({
+  base: "/astro_experimental",
   integrations: [
     react({ include: ['**/react/*'] }),
     solidJs({ include: ['**/solid/*'] }),
