@@ -14,6 +14,7 @@ import angular from '@analogjs/astro-angular';
 // https://astro.build/config
 export default defineConfig({
   base: "/astro_experimental",
+  output: "static",  
   integrations: [
     react({ include: ['**/react/*'] }),
     solidJs({ include: ['**/solid/*'] }),
@@ -24,9 +25,10 @@ export default defineConfig({
         additionalContentDirs: ['src/components/angular'],
         inlineStylesExtension: 'scss|sass|less',
         transformFilter: (_code, id) => {
+          if (id.includes('src/components/angular')) console.log("AnalogJS: Transforming Angular file:", id);
           return id.includes('src/components/angular'); // <- only transform Angular TypeScript files
         },
-      },
+      },      
     }),
   ],
   vite: {
@@ -40,7 +42,8 @@ export default defineConfig({
     build: {
       sourcemap: true,
       minify: false,
-      cssMinify: false
+      cssMinify: false,
+      assetsInlineLimit: 0, // disable inlining of assets
     }
   }
 });

@@ -33,15 +33,15 @@ import { HelloComponent } from './angular/hello.component.ts';
 
 	<main>
 		Hello
-	   <MyCounter client:load client:only="react">
+	   <MyCounter client:only="react">
 		Tes
 		</MyCounter>
 		
-		<SolidCounter client:load client:only="solid-js" />
+		<SolidCounter client:only="solid-js" />
 
-		<SvelteCounter client:load client:only="svelte" />
+		<SvelteCounter client:only="svelte" />
 
-		<VueCounter client:load client:only="vue" />
+		<VueCounter client:only="vue" />
 
 		<HelloComponent client:visible data-analog-id="hello-component-1" />
 	</main>

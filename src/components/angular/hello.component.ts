@@ -1,5 +1,6 @@
 import { NgIf } from '@angular/common';
-import { Component, Input, type OnInit } from '@angular/core';
+import { Component, Input, type OnInit, inject } from '@angular/core';
+import { provideHttpClient, HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-hello',
@@ -17,6 +18,10 @@ import { Component, Input, type OnInit } from '@angular/core';
 })
 export class HelloComponent implements OnInit {
   @Input() helpText = 'help';
+  static clientProviders = [provideHttpClient()];
+  static renderProviders = [HelloComponent.clientProviders];
+
+  http = inject(HttpClient);
 
   show = false;
 
