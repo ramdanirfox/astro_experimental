@@ -9,7 +9,9 @@ import { Component, Input, type OnInit} from '@angular/core';
   <div style="backgroud-color: lightblue; padding: 10px; border-radius: 5px;">
     <p>Angular!!</p>
 
-    <p *ngIf="show">{{ helpText }}</p>
+    @if (show) {
+      <p>{{ helpText }}</p>
+    }
 
     <button (click)="toggle()">Toggle</button>
   </div>

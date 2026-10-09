@@ -38,6 +38,15 @@ export default defineConfig({
   ],
 
   vite: {
+    plugins: [{
+      // @analogjs/vite-plugin-angular derives ngServerMode from build.ssr, which Astro
+      // evaluates once for every environment, so the client bundle ends up as "server".
+      name: 'fix-ng-server-mode',
+      enforce: 'post',
+      configEnvironment(name) {
+        if (name === 'client') return { define: { ngServerMode: 'false' } };
+      },
+    }],
     ssr: {
       // transform these packages during SSR. Globs supported
       noExternal: ['@rx-angular/**', /@angular/, /@analogjs/, /zone.js/],
