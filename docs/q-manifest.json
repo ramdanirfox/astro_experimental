@@ -1,6 +1,6 @@
 {
 	"version": "1",
-	"manifestHash": "5tmzag",
+	"manifestHash": "6tdcfg",
 	"options": {
 		"target": "ssr",
 		"buildMode": "production",
@@ -8,7 +8,7 @@
 			"type": "hoist"
 		}
 	},
-	"bundleGraphAsset": "_astro/bundle-graph.DtQEjCq6.json",
+	"bundleGraphAsset": "_astro/bundle-graph.zwssLKq2.json",
 	"injections": [],
 	"mapping": {},
 	"bundles": {
@@ -276,6 +276,22 @@
 			],
 			"interactivity": 0
 		},
+		"..\\_astro\\client.B0ug0nao.js": {
+			"size": 1247,
+			"total": 13401,
+			"imports": [
+				"..\\_astro\\preact.BxHYrNtW.js",
+				"..\\_astro\\preload-helper.pQB97npi.js"
+			],
+			"dynamicImports": [
+				"..\\_astro\\signals.module.CY5KKC8W.js"
+			],
+			"origins": [
+				"node_modules\\.pnpm\\@astrojs+preact@6.0.6_@babe_01cf01be34df1b5db939cf3de465c800\\node_modules\\@astrojs\\preact\\dist\\client.js",
+				"node_modules\\.pnpm\\@astrojs+preact@6.0.6_@babe_01cf01be34df1b5db939cf3de465c800\\node_modules\\@astrojs\\preact\\dist\\static-html.js"
+			],
+			"interactivity": 0
+		},
 		"..\\_astro\\client.BEcuGAxh.js": {
 			"size": 1007,
 			"total": 88783,
@@ -438,22 +454,6 @@
 			],
 			"interactivity": 0
 		},
-		"..\\_astro\\client.oCnLAKKU.js": {
-			"size": 1247,
-			"total": 13382,
-			"imports": [
-				"..\\_astro\\preact.BxHYrNtW.js",
-				"..\\_astro\\preload-helper.C9kXj7D7.js"
-			],
-			"dynamicImports": [
-				"..\\_astro\\signals.module.CY5KKC8W.js"
-			],
-			"origins": [
-				"node_modules\\.pnpm\\@astrojs+preact@6.0.6_@babe_01cf01be34df1b5db939cf3de465c800\\node_modules\\@astrojs\\preact\\dist\\client.js",
-				"node_modules\\.pnpm\\@astrojs+preact@6.0.6_@babe_01cf01be34df1b5db939cf3de465c800\\node_modules\\@astrojs\\preact\\dist\\static-html.js"
-			],
-			"interactivity": 0
-		},
 		"..\\_astro\\client.svelte.Bvn-Sjsf.js": {
 			"size": 924,
 			"total": 47408,
@@ -490,11 +490,11 @@
 			],
 			"interactivity": 0
 		},
-		"..\\_astro\\core.min.DH_Zi7ab.js": {
+		"..\\_astro\\core.min.2iVVeduv.js": {
 			"size": 102504,
-			"total": 103851,
+			"total": 103870,
 			"imports": [
-				"..\\_astro\\preload-helper.C9kXj7D7.js"
+				"..\\_astro\\preload-helper.pQB97npi.js"
 			],
 			"origins": [
 				"node_modules\\.pnpm\\@qwik.dev+core@2.0.0-rc.2_@_6dc1552b6aa893ebf020e726eef659ef\\node_modules\\@qwik.dev\\core\\dist\\core.min.mjs"
@@ -777,16 +777,16 @@
 			],
 			"interactivity": 0
 		},
-		"..\\_astro\\preload-helper.C9kXj7D7.js": {
-			"size": 1347,
-			"total": 1347,
+		"..\\_astro\\preload-helper.pQB97npi.js": {
+			"size": 1366,
+			"total": 1366,
 			"interactivity": 0
 		},
-		"..\\_astro\\QwikComposition.gazc3fqD.js": {
+		"..\\_astro\\QwikComposition.Cve3QwK8.js": {
 			"size": 1231,
-			"total": 105443,
+			"total": 105462,
 			"imports": [
-				"..\\_astro\\core.min.DH_Zi7ab.js",
+				"..\\_astro\\core.min.2iVVeduv.js",
 				"..\\_astro\\shared-store.abwQMl6y.js"
 			],
 			"origins": [
@@ -794,22 +794,22 @@
 			],
 			"interactivity": 0
 		},
-		"..\\_astro\\QwikCounter.BsT-eWC2.js": {
+		"..\\_astro\\QwikCounter.DTmjUzTr.js": {
 			"size": 432,
-			"total": 104283,
+			"total": 104302,
 			"imports": [
-				"..\\_astro\\core.min.DH_Zi7ab.js"
+				"..\\_astro\\core.min.2iVVeduv.js"
 			],
 			"origins": [
 				"src\\components\\qwik\\QwikCounter.tsx"
 			],
 			"interactivity": 0
 		},
-		"..\\_astro\\QwikNano.B9zWxNf2.js": {
+		"..\\_astro\\QwikNano.DOqtXU-r.js": {
 			"size": 1133,
-			"total": 107905,
+			"total": 107924,
 			"imports": [
-				"..\\_astro\\core.min.DH_Zi7ab.js",
+				"..\\_astro\\core.min.2iVVeduv.js",
 				"..\\_astro\\nano-store.BCKj_mHY.js"
 			],
 			"origins": [
@@ -817,11 +817,11 @@
 			],
 			"interactivity": 0
 		},
-		"..\\_astro\\QwikWrapper._yfq2id7.js": {
+		"..\\_astro\\QwikWrapper.CrlS4xQr.js": {
 			"size": 1026,
-			"total": 105238,
+			"total": 105257,
 			"imports": [
-				"..\\_astro\\core.min.DH_Zi7ab.js",
+				"..\\_astro\\core.min.2iVVeduv.js",
 				"..\\_astro\\shared-store.abwQMl6y.js"
 			],
 			"origins": [
@@ -1104,7 +1104,7 @@
 		}
 	},
 	"assets": {
-		"_astro/bundle-graph.DtQEjCq6.json": {
+		"_astro/bundle-graph.zwssLKq2.json": {
 			"name": "bundle-graph.json",
 			"size": 145
 		}
