@@ -9,6 +9,12 @@ import svelte from '@astrojs/svelte';
 
 import vue from '@astrojs/vue';
 
+import preact from '@astrojs/preact';
+
+import qwik from '@qwik.dev/astro';
+
+import alpinejs from '@astrojs/alpinejs';
+
 import angular from '@analogjs/astro-angular';
 
 import node from '@astrojs/node';
@@ -20,7 +26,10 @@ export default defineConfig({
 
   integrations: [
     react({ include: ['**/react/*'] }),
+    preact({ include: ['**/preact/*'] }),
     solidJs({ include: ['**/solid/*'] }),
+    qwik({ clientRouter: false, include: ['**/qwik/*', '**/@qwik.dev/core/**'] }),
+    alpinejs(),
     svelte(),
     vue(),
     angular({
@@ -49,7 +58,7 @@ export default defineConfig({
     }],
     ssr: {
       // transform these packages during SSR. Globs supported
-      noExternal: ['@rx-angular/**', /@angular/, /@analogjs/, /zone.js/],
+      noExternal: ['@rx-angular/**', '@qwik.dev/core', /@angular/, /@analogjs/, /zone.js/],
     },
     resolve: { // to ensure both Svelte and AnalogJS work together
       conditions: ['browser'],

@@ -1,0 +1,1 @@
+import{i as e}from"./q-BC8Ax6HP.js";import{t}from"./q-D6gD7QP2.js";var n=({cleanup:n})=>{let r=e[0];r.value=t.get(),n(t.onChange(e=>r.value=e))};export{n as s_Bvl4RYb1tHk};

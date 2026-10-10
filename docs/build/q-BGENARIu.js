@@ -1,0 +1,1 @@
+import{p as e,r as t}from"./q-BC8Ax6HP.js";var n=n=>e(`div`,null,{class:`node`},[e(`span`,null,{class:`tag`},`Grandchild`,3,null),`count=`,t(n,`count`),`, message="`,t(n,`message`),`"`,e(`button`,{"q-e:click":n.onInc$},null,`+1`,2,null)],1,`2I_0`);export{n as s_l6CF6OnEqe4};

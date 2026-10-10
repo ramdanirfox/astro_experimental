@@ -1,0 +1,25 @@
+---
+interface Props {
+	label: string;
+	depth: number;
+}
+const { depth } = Astro.props;
+const hasChildren = Astro.slots.has('default');
+---
+
+<div class="frame">
+	<div class="frame-head">
+		<b>htmx</b>
+		<span>depth {depth}</span>
+		<!-- htmx is stateless: these values are kept current by the page's plain JavaScript. -->
+		<span>glue: none (page script)</span>
+		<span>count=<output data-nano-count>0</output></span>
+		<span>×2=<output data-nano-double>0</output></span>
+		<button type="button" data-nano-inc>store +1</button>
+		<button type="button" hx-get="/fragments/htmx" hx-target="next .hx-out" hx-swap="innerHTML">
+			htmx: fetch HTML
+		</button>
+		<span class="hx-out"></span>
+	</div>
+	{hasChildren && <div class="frame-body"><slot /></div>}
+</div>

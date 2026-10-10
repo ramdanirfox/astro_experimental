@@ -1,0 +1,24 @@
+---
+interface Props {
+	label: string;
+	depth: number;
+}
+const { label, depth } = Astro.props;
+const hasChildren = Astro.slots.has('default');
+---
+
+<div class="frame">
+	<div class="frame-head">
+		<b>htmx wrapper</b>
+		<span>depth {depth}</span>
+		<span>prop label="{label}"</span>
+		<!-- htmx is stateless: this count and button are driven by the page's plain JavaScript. -->
+		<span>store count=<output data-store-count>0</output></span>
+		<button type="button" data-store-inc>store +1</button>
+		<button type="button" hx-get="/fragments/htmx" hx-target="next .hx-out" hx-swap="innerHTML">
+			htmx: fetch HTML
+		</button>
+		<span class="hx-out"></span>
+	</div>
+	{hasChildren && <div class="frame-body"><slot /></div>}
+</div>

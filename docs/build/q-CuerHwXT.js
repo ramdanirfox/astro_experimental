@@ -1,0 +1,1 @@
+import{t as e}from"./q-D_rTIl_0.js";var t=()=>e.set(e.get()+1);export{t as s_hJLHpUK4GJ0};

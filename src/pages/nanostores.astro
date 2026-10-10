@@ -1,0 +1,215 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SvelteNano from '../components/svelte/nano/SvelteNano.svelte';
+import QwikNano from '../components/qwik/QwikNano.tsx';
+import ReactNano from '../components/react/ReactNano.tsx';
+import PreactNano from '../components/preact/PreactNano.tsx';
+import SolidNano from '../components/solid/SolidNano.tsx';
+import VueNano from '../components/vue/nano/VueNano.vue';
+import AlpineNano from '../components/alpine/AlpineNano.astro';
+import HtmxNano from '../components/htmx/HtmxNano.astro';
+import { NanoLeafComponent } from '../components/angular/nano-leaf.component.ts';
+
+const glue = [
+	['Svelte', 'none', '$store, because an atom already follows Svelte\'s store contract'],
+	['React', '@nanostores/react', 'useStore(store)'],
+	['Preact', '@nanostores/preact', 'useStore(store)'],
+	['Solid', '@nanostores/solid', 'useStore(store) returns an accessor'],
+	['Vue', '@nanostores/vue', 'useStore(store) returns a readonly ref'],
+	['Lit', '@nanostores/lit', 'StoreController, a reactive controller'],
+	['Angular', 'none', 'subscribe() feeding a signal (the Angular adapter targets nanostores 0.7)'],
+	['Qwik', 'none', 'subscribe() inside useVisibleTask$'],
+	['Alpine', 'none', 'subscribe() through window.__nano'],
+	['htmx', 'none', 'stateless; the page script updates it'],
+];
+---
+
+<Layout title="Nanostores" active="nanostores">
+	<main>
+		<header class="intro">
+			<h1>The same nesting, with nanostores</h1>
+			<p>
+				This is the all-ten chain again, but the shared state is a pair of
+				<a href="https://github.com/nanostores/nanostores">nanostores</a>: an <code>atom</code> for
+				the count and a <code>computed</code> store for its double. Each level reads them through
+				that framework's adapter where one exists, and the header of every level says which glue
+				it used. The earlier tabs use a hand-written store, so you can compare the two.
+			</p>
+		</header>
+
+		<section class="controls" aria-label="Shared store controls (plain JavaScript)">
+			<strong>Nanostore</strong>
+			<button id="dec" type="button">-</button>
+			<output id="count" aria-live="polite" data-nano-count>0</output>
+			<button id="inc" type="button">+</button>
+			<button id="reset" type="button">Reset</button>
+			<span class="derived">×2 = <output data-nano-double>0</output></span>
+		</section>
+
+		<section class="chain" aria-labelledby="chain-title">
+			<h2 id="chain-title">All ten, nested, on nanostores</h2>
+			<div class="stage" id="b">
+				<SvelteNano client:load label="svelte" depth={1}>
+					<QwikNano client:load label="qwik" depth={2}>
+						<ReactNano client:load label="react" depth={3}>
+							<PreactNano client:load label="preact" depth={4}>
+								<SolidNano client:load label="solid" depth={5}>
+									<VueNano client:load label="vue" depth={6}>
+										<lit-nano label="lit" depth="7">
+											<AlpineNano label="alpine" depth={8}>
+												<HtmxNano label="htmx" depth={9}>
+													<NanoLeafComponent client:load label="angular" depth={10} />
+												</HtmxNano>
+											</AlpineNano>
+										</lit-nano>
+									</VueNano>
+								</SolidNano>
+							</PreactNano>
+						</ReactNano>
+					</QwikNano>
+				</SvelteNano>
+			</div>
+		</section>
+
+		<section class="chain" aria-labelledby="glue-title">
+			<h2 id="glue-title">What each framework needed</h2>
+			<div class="table-wrap">
+				<table>
+					<thead>
+						<tr><th>Level</th><th>Adapter package</th><th>Glue</th></tr>
+					</thead>
+					<tbody>
+						{glue.map(([name, pkg, how]) => (
+							<tr><td>{name}</td><td><code>{pkg}</code></td><td>{how}</td></tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	import htmx from 'htmx.org';
+	import { countStore, doubleStore } from '../lib/nano-store';
+	import '../components/lit/lit-nano.ts';
+
+	// Astro hydrates islands outside-in, and Qwik islands have no Astro client renderer, so
+	// Astro never releases the islands nested inside them. Do that final step on its behalf.
+	document.querySelectorAll('astro-island[ssr]:not([renderer-url])').forEach((island) => {
+		island.removeAttribute('ssr');
+		island.dispatchEvent(new CustomEvent('astro:hydrate'));
+	});
+
+	// Plain-JavaScript participants: the control bar and the htmx level. A hydrating wrapper
+	// re-creates the HTML slotted into it, so look elements up on every update and delegate clicks.
+	const setText = (selector: string, value: number) =>
+		document.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+			const text = String(value);
+			if (el.textContent !== text) el.textContent = text; // avoids retriggering the observer
+		});
+	const render = () => {
+		setText('[data-nano-count]', countStore.get());
+		setText('[data-nano-double]', doubleStore.get());
+	};
+	countStore.subscribe(render);
+	doubleStore.subscribe(render);
+
+	document.addEventListener('click', (e) => {
+		if ((e.target as Element).closest('[data-nano-inc]')) countStore.set(countStore.get() + 1);
+	});
+	document.getElementById('inc')!.addEventListener('click', () => countStore.set(countStore.get() + 1));
+	document.getElementById('dec')!.addEventListener('click', () => countStore.set(countStore.get() - 1));
+	document.getElementById('reset')!.addEventListener('click', () => countStore.set(0));
+
+	const stage = document.getElementById('b')!;
+	let pending: number | undefined;
+	new MutationObserver(() => {
+		clearTimeout(pending);
+		pending = window.setTimeout(() => {
+			render();
+			htmx.process(stage);
+		}, 50);
+	}).observe(stage, { childList: true, subtree: true });
+</script>
+
+<style>
+	main {
+		max-width: 1000px;
+		margin: 0 auto;
+		padding: 32px 16px 64px;
+	}
+	.intro h1 {
+		margin: 0 0 8px;
+		font-size: clamp(1.5rem, 4vw, 2.2rem);
+	}
+	.intro p {
+		margin: 0 0 20px;
+		max-width: 72ch;
+		color: var(--muted);
+	}
+	.intro a {
+		color: var(--accent);
+	}
+	.controls {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 16px;
+		margin-bottom: 20px;
+		background: var(--card);
+		border: 1px solid var(--accent);
+		border-radius: 12px;
+	}
+	.controls output {
+		min-width: 2ch;
+		text-align: center;
+		font-size: 1.2rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.derived {
+		margin-left: auto;
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+	.derived output {
+		font-size: 1rem;
+		color: var(--ink);
+	}
+	.chain {
+		margin-bottom: 28px;
+		padding: 16px;
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+	}
+	.chain h2 {
+		margin: 0 0 10px;
+		font-size: 1.1rem;
+	}
+	.stage {
+		overflow-x: auto;
+	}
+	.table-wrap {
+		overflow-x: auto;
+	}
+	table {
+		border-collapse: collapse;
+		width: 100%;
+		font-size: 0.85rem;
+	}
+	th,
+	td {
+		text-align: left;
+		padding: 6px 10px;
+		border-bottom: 1px solid var(--line);
+	}
+	th {
+		color: var(--muted);
+		font-weight: 600;
+	}
+</style>

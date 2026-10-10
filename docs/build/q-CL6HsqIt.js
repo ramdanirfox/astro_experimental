@@ -1,0 +1,1 @@
+import{p as e,r as t,s as n,t as r}from"./q-BC8Ax6HP.js";var i=n(r(()=>import(`./q-BGENARIu.js`),`s_l6CF6OnEqe4`)),a=n=>e(`div`,null,{class:`node`},[e(`span`,null,{class:`tag`},`Child`,3,null),e(i,{onInc$:n.onInc$},{count:t(n,`count`),message:t(n,`message`)},null,2,`2I_1`)],1,`2I_2`);export{a as s_Mo7cIUvL1TI};

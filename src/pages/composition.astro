@@ -1,0 +1,185 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import ReactComposition from '../components/react/ReactComposition.tsx';
+import PreactComposition from '../components/preact/PreactComposition.tsx';
+import SolidComposition from '../components/solid/SolidComposition.tsx';
+import SvelteComposition from '../components/svelte/composition/SvelteComposition.svelte';
+import VueComposition from '../components/vue/composition/VueComposition.vue';
+import { CompositionComponent } from '../components/angular/composition.component.ts';
+import QwikComposition from '../components/qwik/QwikComposition.tsx';
+
+// Alpine reads these from attributes, so keep the logic out of the markup.
+const alpineScope = `{
+	count: 0,
+	message: '',
+	init() {
+		const connect = () => {
+			const store = window.__astroSharedStore;
+			const apply = (s) => { this.count = s.count; this.message = s.message; };
+			apply(store.get());
+			store.onChange(apply);
+		};
+		window.__astroSharedStore
+			? connect()
+			: window.addEventListener('shared-store-ready', connect, { once: true });
+	},
+}`;
+---
+
+<Layout title="Composition & shared state" active="composition">
+	<main>
+		<header class="intro">
+			<h1>Composition and shared state</h1>
+			<p>
+				Inside each island, a value travels <strong>Parent → Child → Grandchild</strong> as props
+				and a callback travels back up (prop drilling, in that framework's own idiom). Across
+				islands, nothing is shared by default, so all of them subscribe to one tiny store. Change
+				it here, in plain JavaScript, or from any card's <strong>+1</strong> button, and every
+				framework re-renders.
+			</p>
+		</header>
+
+		<section class="controls" aria-label="Shared state controls (plain JavaScript)">
+			<strong>Shared store</strong>
+			<button id="dec" type="button">-</button>
+			<output id="count" aria-live="polite">0</output>
+			<button id="inc" type="button">+</button>
+			<button id="reset" type="button">Reset</button>
+			<label>
+				message
+				<input id="message" type="text" value="hello" />
+			</label>
+		</section>
+
+		<section class="grid">
+			<Card id="react" name="React" kind="Props + hook" directive='client:only="react"' ssr="Empty. Rendered entirely in the browser." hint="useSyncExternalStore subscribes to the store.">
+				<ReactComposition client:only="react" />
+			</Card>
+
+			<Card id="preact" name="Preact" kind="Props + hook" directive="client:load" ssr="Fully rendered at build time, hydrated on load." hint="useState + useEffect mirror the store.">
+				<PreactComposition client:load />
+			</Card>
+
+			<Card id="solid" name="Solid" kind="Reactive props" directive='client:only="solid-js"' ssr="Empty. Rendered entirely in the browser." hint="A signal feeds props; only the text nodes that read it update.">
+				<SolidComposition client:only="solid-js" />
+			</Card>
+
+			<Card id="svelte" name="Svelte" kind="Props + store" directive='client:only="svelte"' ssr="Empty. Rendered entirely in the browser." hint="$store syntax works because the store follows Svelte's contract.">
+				<SvelteComposition client:only="svelte" />
+			</Card>
+
+			<Card id="vue" name="Vue" kind="Props + emits" directive='client:only="vue"' ssr="Empty. Rendered entirely in the browser." hint="A shallowRef fed by the store; events are re-emitted upward.">
+				<VueComposition client:only="vue" />
+			</Card>
+
+			<Card id="angular" name="Angular" kind="Signal inputs/outputs" directive="client:visible" ssr="Rendered at build time, hydrated when scrolled into view." hint="Signals drive zoneless change detection.">
+				<CompositionComponent client:visible />
+			</Card>
+
+			<Card id="qwik" name="Qwik" kind="Props + QRLs" directive="client:visible" ssr="Fully rendered at build time; a visible task connects the store." hint="Callbacks crossing components must be QRLs (onInc$).">
+				<QwikComposition client:visible />
+			</Card>
+
+			<Card id="lit" name="Lit" kind="Properties + events" directive="none (module script)" ssr="Empty custom elements, upgraded in the browser." hint="Properties go down, CustomEvents bubble up.">
+				<lit-composition></lit-composition>
+			</Card>
+
+			<Card id="alpine" name="Alpine.js" kind="Scope inheritance" directive="none (global script)" ssr="Plain HTML. Alpine reads the attributes after load." hint="No props: nested x-data scopes inherit from their parent.">
+				<div class="node" x-data={alpineScope}>
+					<span class="tag">Parent</span>
+					<div class="node" x-data="{ level: 'Child' }">
+						<span class="tag" x-text="level"></span>
+						<div class="node" x-data="{ level: 'Grandchild' }">
+							<span class="tag" x-text="level"></span>
+							count=<span x-text="count"></span>, message="<span x-text="message"></span>"
+							<button type="button" x-on:click="window.__astroSharedStore.set({ count: count + 1 })">+1</button>
+						</div>
+					</div>
+				</div>
+			</Card>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	import { sharedStore } from '../lib/shared-store';
+	import '../components/lit/lit-composition.ts';
+
+	const byId = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+	const count = byId('count');
+	const message = byId<HTMLInputElement>('message');
+
+	// The plain-JavaScript participant: no framework at all.
+	sharedStore.subscribe((s) => {
+		count.textContent = String(s.count);
+		if (document.activeElement !== message) message.value = s.message;
+	});
+	byId('inc').addEventListener('click', () =>
+		sharedStore.set({ count: sharedStore.get().count + 1 }),
+	);
+	byId('dec').addEventListener('click', () =>
+		sharedStore.set({ count: sharedStore.get().count - 1 }),
+	);
+	byId('reset').addEventListener('click', () => sharedStore.set({ count: 0, message: 'hello' }));
+	message.addEventListener('input', () => sharedStore.set({ message: message.value }));
+</script>
+
+<style>
+	main {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 32px 16px 64px;
+	}
+	.intro h1 {
+		margin: 0 0 8px;
+		font-size: clamp(1.5rem, 4vw, 2.2rem);
+	}
+	.intro p {
+		margin: 0 0 20px;
+		max-width: 70ch;
+		color: var(--muted);
+	}
+	.controls {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 16px;
+		margin-bottom: 20px;
+		background: var(--card);
+		border: 1px solid var(--accent);
+		border-radius: 12px;
+	}
+	.controls output {
+		min-width: 2ch;
+		text-align: center;
+		font-size: 1.2rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.controls label {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin-left: auto;
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+	.controls input {
+		font: inherit;
+		color: inherit;
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 4px 8px;
+		width: 12ch;
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+		gap: 16px;
+	}
+</style>

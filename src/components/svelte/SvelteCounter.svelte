@@ -21,11 +21,7 @@ A counter written with Svelte
 </script>
 
 <div class="counter">
-	 <div>Svelte</div>
 	<button onclick={subtract}>-</button>
 	<pre>{count}</pre>
 	<button onclick={add}>+</button>
-</div>
-<div class="counter-message">
-	{@render children?.()}
 </div>

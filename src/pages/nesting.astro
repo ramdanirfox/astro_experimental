@@ -1,0 +1,251 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SvelteWrapper from '../components/svelte/nesting/SvelteWrapper.svelte';
+import QwikWrapper from '../components/qwik/QwikWrapper.tsx';
+import ReactWrapper from '../components/react/ReactWrapper.tsx';
+import PreactWrapper from '../components/preact/PreactWrapper.tsx';
+import SolidWrapper from '../components/solid/SolidWrapper.tsx';
+import VueWrapper from '../components/vue/nesting/VueWrapper.vue';
+import AlpineWrapper from '../components/alpine/AlpineWrapper.astro';
+import HtmxWrapper from '../components/htmx/HtmxWrapper.astro';
+import { LeafComponent } from '../components/angular/leaf.component.ts';
+
+const chainA = `<SvelteWrapper client:load label="outer" depth={1}>
+  <QwikWrapper client:load label="middle" depth={2}>
+    <ReactWrapper client:load label="inner" depth={3} />
+  </QwikWrapper>
+</SvelteWrapper>`;
+
+const chainB = `<SvelteWrapper client:load ...>             <!-- {@render children()} -->
+ <QwikWrapper client:load ...>              <!-- <Slot /> -->
+  <ReactWrapper client:load ...>            <!-- {children} -->
+   <PreactWrapper client:load ...>          <!-- {children} -->
+    <SolidWrapper client:load ...>          <!-- props.children -->
+     <VueWrapper client:load ...>           <!-- <slot /> -->
+      <lit-wrapper ...>                     <!-- native <slot>, no island -->
+       <AlpineWrapper ...>                  <!-- plain HTML, no island -->
+        <HtmxWrapper ...>                   <!-- plain HTML, no island -->
+         <LeafComponent client:load ... />  <!-- Angular: leaf only -->`;
+---
+
+<Layout title="Cross-framework nesting" active="nesting">
+	<main>
+		<header class="intro">
+			<h1>Cross-framework nesting</h1>
+			<p>
+				Here the frameworks wrap each other, not just themselves. The nesting is written in Astro:
+				each wrapper renders its <em>children</em> (a slot) and the next framework sits inside it.
+				Every island is still its own island with its own runtime.
+			</p>
+		</header>
+
+		<section class="controls" aria-label="Shared store controls (plain JavaScript)">
+			<strong>Shared store</strong>
+			<button id="dec" type="button">-</button>
+			<output id="count" aria-live="polite">0</output>
+			<button id="inc" type="button">+</button>
+			<button id="reset" type="button">Reset</button>
+		</section>
+
+		<section class="rules" aria-label="What flows between levels">
+			<div>
+				<h2>Props</h2>
+				<p>
+					Come from <strong>Astro</strong> at each level and are static. A wrapper cannot pass
+					props to its slotted child, because the child arrives as finished HTML.
+				</p>
+			</div>
+			<div>
+				<h2>Reactivity</h2>
+				<p>
+					Comes from the <strong>shared store</strong>. Every level shows the same count; any
+					<strong>store +1</strong> button, or the bar above, updates all of them.
+				</p>
+			</div>
+			<div>
+				<h2>Local state</h2>
+				<p>
+					<strong>local +1</strong> re-renders only that level. The islands nested inside should
+					survive it.
+				</p>
+			</div>
+		</section>
+
+		<section class="chain" aria-labelledby="chain-a">
+			<h2 id="chain-a">Chain A: Svelte → Qwik → React</h2>
+			<pre class="src"><code>{chainA}</code></pre>
+			<div class="stage" id="a">
+				<SvelteWrapper client:load label="outer" depth={1}>
+					<QwikWrapper client:load label="middle" depth={2}>
+						<ReactWrapper client:load label="inner" depth={3} />
+					</QwikWrapper>
+				</SvelteWrapper>
+			</div>
+		</section>
+
+		<section class="chain" aria-labelledby="chain-b">
+			<h2 id="chain-b">Chain B: all ten, nested</h2>
+			<p class="lead">
+				Nine UI approaches plus htmx in one chain. Angular is last because its Astro integration
+				drops children, so it can only be a leaf.
+			</p>
+			<pre class="src"><code>{chainB}</code></pre>
+			<div class="stage" id="b">
+				<SvelteWrapper client:load label="svelte" depth={1}>
+					<QwikWrapper client:load label="qwik" depth={2}>
+						<ReactWrapper client:load label="react" depth={3}>
+							<PreactWrapper client:load label="preact" depth={4}>
+								<SolidWrapper client:load label="solid" depth={5}>
+									<VueWrapper client:load label="vue" depth={6}>
+										<lit-wrapper label="lit" depth="7">
+											<AlpineWrapper label="alpine" depth={8}>
+												<HtmxWrapper label="htmx" depth={9}>
+													<LeafComponent client:load label="angular" depth={10} />
+												</HtmxWrapper>
+											</AlpineWrapper>
+										</lit-wrapper>
+									</VueWrapper>
+								</SolidWrapper>
+							</PreactWrapper>
+						</ReactWrapper>
+					</QwikWrapper>
+				</SvelteWrapper>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	import htmx from 'htmx.org';
+	import { sharedStore } from '../lib/shared-store';
+	import '../components/lit/lit-wrapper.ts';
+
+	// Astro hydrates islands from the outside in: a child waits until its parent island has
+	// lost its `ssr` attribute and fired `astro:hydrate`. Qwik islands have no Astro client
+	// renderer (they resume via qwikloader), so Astro never does either, and every island
+	// nested inside a Qwik wrapper stays frozen. This does that final step on Astro's behalf.
+	document.querySelectorAll('astro-island[ssr]:not([renderer-url])').forEach((island) => {
+		island.removeAttribute('ssr');
+		island.dispatchEvent(new CustomEvent('astro:hydrate'));
+	});
+
+	// The plain-JavaScript participants: the control bar and the htmx wrapper (htmx has no state).
+	// A hydrating wrapper re-creates the HTML slotted into it, so plain DOM inside a wrapper
+	// (the htmx level) is replaced by fresh, unwired nodes. Hence: delegate clicks from the
+	// document, look the counters up on every update, and re-run htmx.process on new nodes.
+	const bump = (by: number) => sharedStore.set({ count: sharedStore.get().count + by });
+	const renderCounts = () => {
+		const value = String(sharedStore.get().count);
+		document.querySelectorAll<HTMLElement>('#count, [data-store-count]').forEach((el) => {
+			if (el.textContent !== value) el.textContent = value; // avoids retriggering the observer
+		});
+	};
+	sharedStore.subscribe(renderCounts);
+
+	document.addEventListener('click', (e) => {
+		const target = e.target as Element;
+		if (target.closest('[data-store-inc]')) bump(1);
+	});
+	document.getElementById('inc')!.addEventListener('click', () => bump(1));
+	document.getElementById('dec')!.addEventListener('click', () => bump(-1));
+	document.getElementById('reset')!.addEventListener('click', () => sharedStore.set({ count: 0 }));
+
+	const stage = document.getElementById('b')!;
+	// The ES build of htmx sets up itself on import but does not define window.htmx, so import it.
+	const processHtmx = () => htmx.process(stage);
+	let pending: number | undefined;
+	new MutationObserver(() => {
+		clearTimeout(pending);
+		pending = window.setTimeout(() => {
+			renderCounts();
+			processHtmx();
+		}, 50);
+	}).observe(stage, { childList: true, subtree: true });
+</script>
+
+<style>
+	main {
+		max-width: 1000px;
+		margin: 0 auto;
+		padding: 32px 16px 64px;
+	}
+	.intro h1 {
+		margin: 0 0 8px;
+		font-size: clamp(1.5rem, 4vw, 2.2rem);
+	}
+	.intro p {
+		margin: 0 0 20px;
+		max-width: 70ch;
+		color: var(--muted);
+	}
+	.controls {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 16px;
+		margin-bottom: 20px;
+		background: var(--card);
+		border: 1px solid var(--accent);
+		border-radius: 12px;
+	}
+	.controls output {
+		min-width: 2ch;
+		text-align: center;
+		font-size: 1.2rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.rules {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+		gap: 12px;
+		margin-bottom: 28px;
+	}
+	.rules > div {
+		padding: 12px 14px;
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: 12px;
+	}
+	.rules h2 {
+		margin: 0 0 4px;
+		font-size: 0.95rem;
+	}
+	.rules p {
+		margin: 0;
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+	.chain {
+		margin-bottom: 28px;
+		padding: 16px;
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+	}
+	.chain h2 {
+		margin: 0 0 10px;
+		font-size: 1.1rem;
+	}
+	.lead {
+		margin: 0 0 10px;
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+	.src {
+		margin: 0 0 14px;
+		padding: 10px 12px;
+		overflow-x: auto;
+		font-size: 0.78rem;
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+	}
+	/* ten nested frames are wider than a phone */
+	.stage {
+		overflow-x: auto;
+	}
+</style>

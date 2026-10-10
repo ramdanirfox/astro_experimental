@@ -9,6 +9,8 @@
   ],
   "compilerOptions": {
     "jsx": "preserve",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "baseUrl": ".",
     "paths": {
       "@/*": [

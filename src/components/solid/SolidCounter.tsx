@@ -14,13 +14,11 @@ export default function SolidCounter(props: { children?: JSX.Element }) {
 
 	return (
 		<>
-			<div id="solid" class="counter">
-				<div>Solid</div>
+			<div class="counter">
 				<button onClick={subtract}>-</button>
 				<pre>{count()}</pre>
 				<button onClick={add}>+</button>
 			</div>
-			<div class="counter-message">{props.children}</div>
 		</>
 	);
 }

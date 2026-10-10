@@ -1,0 +1,105 @@
+---
+import { aboutById } from '../data/frameworks';
+
+interface Props {
+	id: string;
+	name: string;
+	kind: string;
+	directive: string;
+	/** What happens before the browser runs any JS */
+	ssr: string;
+	hint?: string;
+}
+const { id, name, kind, directive, ssr, hint } = Astro.props;
+const about = aboutById[id];
+---
+
+<article class="card" id={id}>
+	<header>
+		<h2>{name}</h2>
+		<span class="kind">{kind}</span>
+	</header>
+
+	<div class="demo"><slot /></div>
+
+	<dl>
+		<dt>Directive</dt>
+		<dd><code>{directive}</code></dd>
+		<dt>Initial HTML</dt>
+		<dd>{ssr}</dd>
+	</dl>
+	{hint && <p class="hint">{hint}</p>}
+
+	<details>
+		<summary>About</summary>
+		<p class="about">{about}</p>
+	</details>
+</article>
+
+<style>
+	.card {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		padding: 18px;
+		background: var(--card);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+	}
+	header {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+	h2 {
+		margin: 0;
+		font-size: 1.15rem;
+	}
+	.kind {
+		font-size: 0.75rem;
+		color: var(--accent);
+		border: 1px solid var(--accent);
+		border-radius: 999px;
+		padding: 1px 10px;
+	}
+	.demo {
+		min-height: 64px;
+		padding: 12px;
+		border-radius: 10px;
+		background: var(--bg);
+		display: flex;
+		align-items: center;
+	}
+	dl {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 4px 12px;
+		margin: 0;
+		font-size: 0.85rem;
+	}
+	dt {
+		color: var(--muted);
+	}
+	dd {
+		margin: 0;
+	}
+	.hint {
+		margin: 0;
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	details {
+		margin-top: auto;
+		font-size: 0.9rem;
+	}
+	summary {
+		cursor: pointer;
+		color: var(--accent);
+	}
+	.about {
+		margin: 8px 0 0;
+		color: var(--muted);
+	}
+</style>

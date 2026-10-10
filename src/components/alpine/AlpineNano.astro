@@ -1,0 +1,39 @@
+---
+interface Props {
+	label: string;
+	depth: number;
+}
+const { depth } = Astro.props;
+const hasChildren = Astro.slots.has('default');
+
+// Alpine cannot import modules, so it reaches the stores through window.__nano
+// (set by nano-store.ts) and waits for it if it is not there yet.
+const scope = `{
+	count: 0,
+	double: 0,
+	clicks: 0,
+	init() {
+		const connect = () => {
+			const { countStore, doubleStore } = window.__nano;
+			countStore.subscribe((v) => { this.count = v; });
+			doubleStore.subscribe((v) => { this.double = v; });
+		};
+		window.__nano
+			? connect()
+			: window.addEventListener('nano-store-ready', connect, { once: true });
+	},
+}`;
+---
+
+<div class="frame" x-data={scope}>
+	<div class="frame-head">
+		<b>Alpine</b>
+		<span>depth {depth}</span>
+		<span>glue: <code>window.__nano</code> + <code>subscribe</code></span>
+		<span>count=<output x-text="count">0</output></span>
+		<span>×2=<output x-text="double">0</output></span>
+		<button type="button" x-on:click="clicks++">local +1 (<span x-text="clicks">0</span>)</button>
+		<button type="button" x-on:click="window.__nano.countStore.set(count + 1)">store +1</button>
+	</div>
+	{hasChildren && <div class="frame-body"><slot /></div>}
+</div>

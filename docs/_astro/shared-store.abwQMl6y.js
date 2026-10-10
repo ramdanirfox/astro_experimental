@@ -1,0 +1,1 @@
+function e(){let e={count:0,message:`hello`},t=new Set,n=e=>(t.add(e),()=>{t.delete(e)});return{get:()=>e,set:n=>{e={...e,...n},t.forEach(t=>t(e))},onChange:n,subscribe:t=>(t(e),n(t))}}var t=`__astroSharedStore`,n=globalThis,r=n[t]??=(()=>{let t=e();return typeof window<`u`&&window.dispatchEvent(new Event(`shared-store-ready`)),t})();export{r as sharedStore};

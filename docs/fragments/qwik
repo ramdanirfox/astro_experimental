@@ -1,0 +1,1 @@
+<span class="fact">Resumable: the server serializes app state into the HTML, and the browser loads code only when you interact.</span>

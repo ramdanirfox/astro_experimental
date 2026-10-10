@@ -1,0 +1,1 @@
+import{client_default as e}from"./angular-vendor.DJJKXZk0.js";export{e as default};

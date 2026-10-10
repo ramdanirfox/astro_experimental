@@ -1,0 +1,40 @@
+---
+interface Props {
+	label: string;
+	depth: number;
+}
+const { label, depth } = Astro.props;
+const hasChildren = Astro.slots.has('default');
+
+// Alpine reads this from the attribute; the store is found through a global because
+// Alpine and the store module have no guaranteed load order.
+const scope = `{
+	count: 0,
+	clicks: 0,
+	init() {
+		const connect = () => {
+			const store = window.__astroSharedStore;
+			const apply = (s) => { this.count = s.count; };
+			apply(store.get());
+			store.onChange(apply);
+		};
+		window.__astroSharedStore
+			? connect()
+			: window.addEventListener('shared-store-ready', connect, { once: true });
+	},
+}`;
+---
+
+<div class="frame" x-data={scope}>
+	<div class="frame-head">
+		<b>Alpine wrapper</b>
+		<span>depth {depth}</span>
+		<span>prop label="{label}"</span>
+		<span>store count=<output x-text="count">0</output></span>
+		<button type="button" x-on:click="clicks++">local +1 (<span x-text="clicks">0</span>)</button>
+		<button type="button" x-on:click="window.__astroSharedStore.set({ count: count + 1 })">
+			store +1
+		</button>
+	</div>
+	{hasChildren && <div class="frame-body"><slot /></div>}
+</div>

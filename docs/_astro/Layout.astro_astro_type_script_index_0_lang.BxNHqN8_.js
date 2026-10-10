@@ -1,0 +1,1 @@
+import"./htmx.esm.DPrQmwNd.js";var e=e=>{let{target:t,elt:n,xhr:r}=e.detail,i=n?.dataset.errorHint??``;t&&(t.innerHTML=`<p class="fact">Request failed (${r?.status?`HTTP ${r.status}`:`network error`}). ${i}</p>`)};document.body.addEventListener(`htmx:responseError`,e),document.body.addEventListener(`htmx:sendError`,e);

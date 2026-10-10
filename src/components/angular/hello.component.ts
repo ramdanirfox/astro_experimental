@@ -6,11 +6,10 @@ import { Component, Input, type OnInit} from '@angular/core';
   standalone: true,
   imports: [],
   template: `
-  <div style="backgroud-color: lightblue; padding: 10px; border-radius: 5px;">
-    <p>Angular!!</p>
+  <div class="counter">
 
     @if (show) {
-      <p>{{ helpText }}</p>
+      <span>{{ helpText }}</span>
     }
 
     <button (click)="toggle()">Toggle</button>
@@ -18,7 +17,7 @@ import { Component, Input, type OnInit} from '@angular/core';
   `,
 })
 export class HelloComponent implements OnInit {
-  @Input() helpText = 'help';
+  @Input() helpText = 'Angular says hi';
   // static clientProviders = [provideHttpClient()];
   // static renderProviders = [HelloComponent.clientProviders];
 

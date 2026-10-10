@@ -1,11 +1,166 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Card from '../components/Card.astro';
+import MyCounter from '../components/react/counter-react.tsx';
+import QwikCounter from '../components/qwik/QwikCounter.tsx';
+import PreactCounter from '../components/preact/PreactCounter.tsx';
+import SolidCounter from '../components/solid/SolidCounter.tsx';
+import SvelteCounter from '../components/svelte/SvelteCounter.svelte';
+import VueCounter from '../components/vue/VueCounter.vue';
+import { frameworks } from '../data/frameworks';
+import { HelloComponent } from '../components/angular/hello.component.ts';
 ---
 
 <Layout>
-	<Welcome />
+	<main>
+		<header class="intro">
+			<h1>One page, nine UI approaches, and an htmx layer</h1>
+			<p>
+				Each card is an independent island using a different framework or library. The counters
+				behave the same on purpose; what differs is how each one gets its HTML and when its
+				JavaScript runs. htmx, below the cards, works across all of them.
+			</p>
+		</header>
+
+		<section class="grid">
+			<Card id="react" name="React" kind="Component framework" directive='client:only="react"' ssr="Empty. Rendered entirely in the browser.">
+				<MyCounter client:only="react" />
+			</Card>
+
+			<Card id="preact" name="Preact" kind="Component framework" directive="client:load" ssr="Fully rendered at build time, hydrated on load.">
+				<PreactCounter client:load />
+			</Card>
+
+			<Card id="solid" name="Solid" kind="Signals framework" directive='client:only="solid-js"' ssr="Empty. Rendered entirely in the browser.">
+				<SolidCounter client:only="solid-js" />
+			</Card>
+
+			<Card id="svelte" name="Svelte" kind="Compiler" directive='client:only="svelte"' ssr="Empty. Rendered entirely in the browser.">
+				<SvelteCounter client:only="svelte" />
+			</Card>
+
+			<Card id="vue" name="Vue" kind="Component framework" directive='client:only="vue"' ssr="Empty. Rendered entirely in the browser.">
+				<VueCounter client:only="vue" />
+			</Card>
+
+			<Card
+				id="angular"
+				name="Angular"
+				kind="Full framework (AnalogJS)"
+				directive="client:visible"
+				ssr="Rendered at build time, hydrated when scrolled into view."
+				hint="Scroll here to activate the toggle."
+			>
+				<HelloComponent client:visible data-analog-id="hello-component-1" />
+			</Card>
+
+			<Card id="alpine" name="Alpine.js" kind="HTML attributes" directive="none (global script)" ssr="Plain HTML. Alpine reads the attributes after load.">
+				<div class="counter" x-data="{ count: 0 }">
+					<button x-on:click="count--">-</button>
+					<pre x-text="count">0</pre>
+					<button x-on:click="count++">+</button>
+				</div>
+			</Card>
+
+			<Card id="qwik" name="Qwik" kind="Resumable framework" directive="client:visible" ssr="Fully rendered at build time. Code is lazy-loaded on first interaction, no hydration.">
+				<QwikCounter client:visible />
+			</Card>
+
+			<Card id="lit" name="Lit" kind="Web components" directive="none (module script)" ssr="Empty custom element. Upgraded in the browser, no SSR here.">
+				<lit-counter></lit-counter>
+			</Card>
+
+		</section>
+
+		<section class="htmx-layer" aria-labelledby="htmx-title">
+			<h2 id="htmx-title">htmx: a layer, not a framework</h2>
+			<p>
+				htmx is just HTML attributes (<code>hx-get</code>, <code>hx-target</code>) that fetch HTML
+				from the server and swap it in. It does not know or care which framework produced the
+				page, so it works next to all of the cards above. (For islands that render in the browser,
+				call <code>htmx.process(el)</code> after they render so htmx notices the new attributes.)
+			</p>
+
+			<div class="htmx-demo">
+				<div class="picker" role="group" aria-label="Pick a framework">
+					{frameworks.map((f) => (
+						<button hx-get={`/fragments/${f.id}`} hx-target="#htmx-out" hx-swap="innerHTML">
+							{f.name}
+						</button>
+					))}
+				</div>
+				<div id="htmx-out" class="out" aria-live="polite">Pick a framework: its description is fetched as an HTML fragment.</div>
+			</div>
+
+			<div class="htmx-demo">
+				<button
+					hx-get="/fragments/server-time"
+					hx-target="#server-time"
+					hx-swap="innerHTML"
+					data-error-hint="This endpoint is rendered per request, so it only exists when running the Node server (node dist/server/index.js)."
+				>
+					Load server time
+				</button>
+				<div id="server-time" class="out" aria-live="polite">Fetched live from the server; needs the Node server.</div>
+			</div>
+		</section>
+	</main>
 </Layout>
+
+<script>
+	import '../components/lit/lit-counter.ts';
+</script>
+
+<style>
+	main {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 40px 16px 64px;
+	}
+	.intro h1 {
+		margin: 0 0 8px;
+		font-size: clamp(1.5rem, 4vw, 2.2rem);
+	}
+	.intro p {
+		margin: 0 0 28px;
+		max-width: 60ch;
+		color: var(--muted);
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+		gap: 16px;
+	}
+	.htmx-layer {
+		margin-top: 32px;
+		padding: 20px;
+		border: 1px dashed var(--accent);
+		border-radius: 14px;
+	}
+	.htmx-layer h2 {
+		margin: 0 0 6px;
+		font-size: 1.15rem;
+	}
+	.htmx-layer > p {
+		margin: 0 0 16px;
+		max-width: 70ch;
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+	.htmx-demo {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		align-items: flex-start;
+		margin-top: 12px;
+	}
+	.picker {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.out {
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+</style>

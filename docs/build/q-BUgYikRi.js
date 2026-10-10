@@ -1,0 +1,1 @@
+import{t as e}from"./q-D6gD7QP2.js";var t=()=>e.set({count:e.get().count+1});export{t as s_GsfsNgbUnWo};

@@ -1,0 +1,1 @@
+import{i as e}from"./q-BC8Ax6HP.js";import{n as t,t as n}from"./q-D_rTIl_0.js";var r=({cleanup:r})=>{let i=e[0],a=e[1];r(n.subscribe(e=>i.value=e)),r(t.subscribe(e=>a.value=e))};export{r as s_op40QXwqakY};

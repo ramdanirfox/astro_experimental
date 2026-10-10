@@ -1,0 +1,1 @@
+import"./preact.BxHYrNtW.js";import{d as e}from"./hooks.CZ0sSOjZ.js";import{u as t}from"./jsxRuntime.BteXPMDA.js";function n(){let[n,r]=e(0);return t(`div`,{class:`counter`,children:[t(`button`,{onClick:()=>r(n-1),children:`-`}),t(`pre`,{children:n}),t(`button`,{onClick:()=>r(n+1),children:`+`})]})}export{n as default};

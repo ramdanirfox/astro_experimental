@@ -1,23 +1,19 @@
 /** @jsxImportSource react */
-// src/components/MyCounter.jsx
-import React, { useEffect, useState, type ReactNode } from 'react';
-// This is a standard React functional component
-export default function MyCounter({ children }: { children?: ReactNode }) {
-    // State to hold the counter value
-    const [count, setCount] = useState(0);
+import { useEffect, useState } from 'react';
 
-    // Function to increment the counter
-    const increment = () => {
-        setCount(count + 1);
-    };
+/** A counter written with React */
+export default function MyCounter() {
+	const [count, setCount] = useState(0);
 
-    useEffect(() => {
-        console.log("Counter React Rendered");
-    }, [])
+	useEffect(() => {
+		console.log('Counter React Rendered');
+	}, []);
 
-    return (
-        <div style={{backgroundColor: 'lightcyan', fontSize: '20px'}}>
-            Cmp React
-        </div>
-    );
+	return (
+		<div className="counter">
+			<button onClick={() => setCount(count - 1)}>-</button>
+			<pre>{count}</pre>
+			<button onClick={() => setCount(count + 1)}>+</button>
+		</div>
+	);
 }
